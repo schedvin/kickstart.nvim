@@ -351,6 +351,14 @@ local servers = {
   },
 }
 
+-- Add custom lsp config  ~/.config/nvim/lua/custom/lsp.lua
+local has_lsp_config, lsp = pcall(require, 'custom.lsp')
+if has_lsp_config then
+  for k,v in pairs(lsp.ensure_installed) do
+    servers[k] = v
+  end
+end
+
 -- Setup neovim lua configuration
 require('neodev').setup()
 --
@@ -377,6 +385,10 @@ mason_lspconfig.setup_handlers {
     }
   end,
 }
+
+if has_lsp_config then
+  lsp.setup_handlers()
+end
 
 -- Turn on lsp status information
 require('fidget').setup()

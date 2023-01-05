@@ -41,6 +41,8 @@ You could directly modify the `init.lua` file with your personal customizations.
 
 An alternative approach is to create a separate `custom.plugins` module to register your own plugins. In addition, you can handle further customizations in the `/after/plugin/` directory (see `:help load-plugins`). See the following examples for more information. Leveraging this technique should make upgrading to a newer version of this repo easier. 
 
+Similar to `custom.plugins` it is possible to register your own LSPs by adding configuration by creating a separate `custom.lsp_servers` and keep your `init.lua` withotu customizations.
+
 #### Example `plugins.lua`
 
 The following is an example of a `plugins.lua` module (located at `$HOME/.config/nvim/lua/custom/plugins.lua`) where you can register your own plugins. 
@@ -55,7 +57,34 @@ return function(use)
   })
 end
 ```
+#### Example `lsp_servers.lua`
 
+The following is an example of a `lsp_servers.lua` module (located at `$HOME/.config/nvim/lua/custom/lsp_servers.lua`) where you can add your LSPs of choice and keep init.lua without modifications. 
+
+```lua
+local M = {}
+
+M.servers = {
+  bashls = {},
+  tsserver = {},
+}
+
+M.setup_handlers = function()
+  -- import lspconfig plugin safely
+  local lspconfig_status, lspconfig = pcall(require, "lspconfig")
+  if not lspconfig_status then
+    return
+  end
+
+  lspconfig.bashls.setup {
+    on_attach = function(_, bufnr)
+      print("Attached")
+    end
+  }
+end
+
+return M
+```
 #### Example `defaults.lua`
 
 For further customizations, you can add a file in the `/after/plugin/` folder (see `:help load-plugins`) to include your own options, keymaps, autogroups, and more. The following is an example `defaults.lua` file (located at `$HOME/.config/nvim/after/plugin/defaults.lua`).
